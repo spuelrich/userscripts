@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name        BesserStadtRadeln
-// @namespace   http://userscripts.org/users/477034
-// @include     http://stadtradeln.de/index.php?id=167*
-// @include     http://www.stadtradeln.de/index.php?id=167*
-// @require     http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
-// @require     http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js
-// @version     13
+// @namespace   http://userscripts.org/users/spuelrich
+// @include     https://stadtradeln.de/index.php?id=167*
+// @include     https://www.stadtradeln.de/index.php?id=167*
+// @require     https://stadtradeln.de/typo3conf/ext/sexybookmarks/res/jquery/js/jquery-1.8.2.min.js
+// @version     14
 // ==/UserScript==
 
-
+/*
 var comments = {};
 $("#content tr")
     .find("td:eq(3)")
@@ -103,3 +102,34 @@ $('<a href="#">absenden</a>')
           background: "yellow"})
     .appendTo("#bettersend")
     .click(sendstadtradeln);
+*/
+
+$(function() {
+    console.log("jijij");
+    $('ul.socials').remove();
+
+    var $table = $('<table></table>');
+    $table.insertBefore('form#radelkalender_form');
+    $table.append('<tr><td>ahhuuuuha</td></tr>');
+
+    $('tr')
+        .filter(function(){
+            var $td = $(this).children('td').first();
+            if ($td.prop('colspan')>1)
+                return false;
+            if (!$td.hasClass('nobreaks'))
+                return false;
+            return true;
+        })
+        .clone()
+    .each(function() {
+        var $lastcell = $('td:nth-child(6)', this);
+
+        var link = $('a:eq(1)', $lastcell).prop('href');
+        //$lastcell.remove();
+        link.match(/entry_id=([0-9]+)/);
+        $lastcell.html(RegExp.$1);
+    })
+        .appendTo($table);
+    //.css('background-color', 'red');
+});
