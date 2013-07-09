@@ -104,13 +104,13 @@ $('<a href="#">absenden</a>')
     .click(sendstadtradeln);
 */
 
+var $originalinput = $('#radelkalender_form table tr:last');
+
 $(function() {
-    console.log("jijij");
     $('ul.socials').remove();
 
     var $table = $('<table></table>');
     $table.insertBefore('form#radelkalender_form');
-    $table.append('<tr><td>ahhuuuuha</td></tr>');
 
     $('tr')
         .filter(function(){
@@ -122,14 +122,40 @@ $(function() {
             return true;
         })
         .clone()
-    .each(function() {
-        var $lastcell = $('td:nth-child(6)', this);
+        .each(function() {
+            var $zeile = $(this)
+            // leere Zelle weg
+            $('td:nth-child(3)', $zeile).remove();
 
-        var link = $('a:eq(1)', $lastcell).prop('href');
-        //$lastcell.remove();
-        link.match(/entry_id=([0-9]+)/);
-        $lastcell.html(RegExp.$1);
-    })
-        .appendTo($table);
+            var $cells = $('td', $zeile);
+
+            // Datum
+            $cells.eq(0).html($('<input type="text" maxlength="10"/>').val($cells.eq(0).html())
+                             );
+
+            // Uhrzeit
+            $cells.eq(1).html($('<input type="text" maxlength="5"/>').val($cells.eq(1).html())
+                             );
+
+            // Beschreibung
+            $cells.eq(2).html($('<input type="text" maxlength="64"/>').val($cells.eq(2).html()).width(320)
+                             );
+
+            // km als Zahl
+            var $km = $cells.eq(3);
+            $km.html().match(/^(\d+)/);
+            var km = RegExp.$1;
+            $km.html($('<input type="text" maxlength="4"/>').val(km).width(40));
+
+            // ID
+            var $lastcell = $cells.eq(4);
+            $('a:eq(1)', $lastcell).prop('href').match(/entry_id=([0-9]+)/);
+            var ID = RegExp.$1;
+            $lastcell.html(ID);
+
+            $zeile.addClass('besserupdate');
+
+        })
+            .appendTo($table);
     //.css('background-color', 'red');
 });
