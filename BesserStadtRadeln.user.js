@@ -104,10 +104,21 @@ $('<a href="#">absenden</a>')
     .click(sendstadtradeln);
 */
 
-var $originalinput = $('#radelkalender_form table tr:last');
+function input_changed () {
+    $(this)
+        .siblings(':last')
+        .text('geändert')
+        .css('background-color', '#eecccc')
+        .parent().addClass('besser_changed');
+}
+
+function do_besser_save () {
+}
 
 $(function() {
+    var $originalinput = $('#radelkalender_form table tr:last');
     $('ul.socials').remove();
+    $('iframe').remove();
 
     var $table = $('<table></table>');
     $table.insertBefore('form#radelkalender_form');
@@ -121,41 +132,52 @@ $(function() {
                 return false;
             return true;
         })
-        .clone()
         .each(function() {
-            var $zeile = $(this)
-            // leere Zelle weg
-            $('td:nth-child(3)', $zeile).remove();
+            var $zeile = $originalinput.clone()
+            $('input[type=submit]', $zeile).remove();
+            $zeile.append('<td><input type="text"/></td><td class="status">OK</td>');
 
-            var $cells = $('td', $zeile);
+            var $cells = $('td', this);
+            for (var i=0;i<=5;i++) {
+                var $input = $('td input', $zeile).eq(i);
+                $input
+                    .prop('name', '')
+                    .prop('id', '');
+                var val;
+                if (i == 4) {
+                    // km als Zahl
+                    var $km = $cells.eq(i);
+                    $km.text().match(/^(\d+)/);
+                    val = RegExp.$1;
+                }
+                else if (i == 5) {
+                    // ID einfügen
+                    $('a:eq(1)', $cells.eq(i)).prop('href').match(/entry_id=([0-9]+)/);
+                    val = RegExp.$1;
+                }
+                else {
+                    val = $cells.eq(i).text();
+                }
+                $input.val(val);
+            }
 
-            // Datum
-            $cells.eq(0).html($('<input type="text" maxlength="10"/>').val($cells.eq(0).html())
-                             );
+            $zeile.addClass('besser_update').appendTo($table);
 
-            // Uhrzeit
-            $cells.eq(1).html($('<input type="text" maxlength="5"/>').val($cells.eq(1).html())
-                             );
+        });
+    for (var i=0;i<=5;i++) {
+        var $zeile = $originalinput.clone();
+        $('input[type=submit]', $zeile).remove();
+        $('td input', $zeile)
+            .prop('name', '')
+            .prop('id', '');
+        $zeile.append('<td/><td class="status">NEU</td>');
+        $zeile.addClass('besser_new').appendTo($table);
+    }
 
-            // Beschreibung
-            $cells.eq(2).html($('<input type="text" maxlength="64"/>').val($cells.eq(2).html()).width(320)
-                             );
+    $('tr.besser_update td').change(input_changed);
+    $('tr.besser_new td').change(input_changed);
 
-            // km als Zahl
-            var $km = $cells.eq(3);
-            $km.html().match(/^(\d+)/);
-            var km = RegExp.$1;
-            $km.html($('<input type="text" maxlength="4"/>').val(km).width(40));
+    $table.append('<tr><td><a id="besser_save" href="#">speichern</a></td></tr>');
+    $('#besser_save').click(do_besser_save);
 
-            // ID
-            var $lastcell = $cells.eq(4);
-            $('a:eq(1)', $lastcell).prop('href').match(/entry_id=([0-9]+)/);
-            var ID = RegExp.$1;
-            $lastcell.html(ID);
-
-            $zeile.addClass('besserupdate');
-
-        })
-            .appendTo($table);
-    //.css('background-color', 'red');
 });
