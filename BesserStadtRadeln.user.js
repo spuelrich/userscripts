@@ -4,7 +4,7 @@
 // @include     https://stadtradeln.de/index.php?id=167*
 // @include     https://www.stadtradeln.de/index.php?id=167*
 // @require     https://stadtradeln.de/typo3conf/ext/sexybookmarks/res/jquery/js/jquery-1.8.2.min.js
-// @version     15
+// @version     16
 // ==/UserScript==
 
 
